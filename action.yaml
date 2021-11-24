@@ -36,7 +36,7 @@ runs:
         role-to-assume: ${{ inputs.aws-build-role }}
 
     - name: Get App Config
-      uses: source-ip/actions-aws-ssm-get-by-path@v1
+      uses: source-ip/actions-aws-ssm-get-by-path@v1.0.0
       with:
         paths: ${{ format('/app/{0},/app/{0}/env/{1}/', inputs.app-name, inputs.target-environment) }}
         save-to-environment: true
