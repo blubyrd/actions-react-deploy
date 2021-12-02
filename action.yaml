@@ -3,22 +3,26 @@ description: 'Deploy a React application. Intended to be used in conjunction wit
 
 inputs:
   repository:
-    description: 'Which repository are we deploying?'
+    description: 'Github Repo'
     required: true
   app-name:
-    description: 'App name. Used for param store lookups.'
+    description: 'App name.'
     required: true
   target-environment:
-    description: 'Where are we deploying this?'
+    description: 'Environment to deploy to'
     required: true
-  aws-build-role:
-    description: 'The relevant dev build role for AWS stuff.'
+    default: 'None'
+  aws-role-dev:
+    description: 'The relevant dev build role for AWS.'
+    required: true
+  aws-role-prod:
+    description: 'The relevant prod build role for AWS.'
     required: true
   aws-access-key-id:
-    description: 'AWS access key!'
+    description: 'AWS access key'
     required: true
   aws-secret-access-key:
-    description: 'AWS access key, but more secreter!'
+    description: 'AWS secret access key'
     required: true
   aws-region:
     description: 'Regionality of the AWS credentialing'
@@ -27,13 +31,20 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Set Build Role
+      id: set-role
+      uses: source-ip/actions-set-build-role@v1.0.0
+      with:
+        prod-role: ${{ inputs.aws-role-prod }}
+        dev-role: ${{ inputs.aws-role-dev }}
+        environment-name: ${{ inputs.target-environment }}
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ inputs.aws-access-key-id }}
         aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
         aws-region: ${{ inputs.aws-region }}
-        role-to-assume: ${{ inputs.aws-build-role }}
+        role-to-assume: ${{ steps.set-role.outputs.build-role }}
         role-duration-seconds: 1200
     - name: Get App Config
       uses: source-ip/actions-aws-ssm-get-by-path@v1.0.0
@@ -45,19 +56,9 @@ runs:
       uses: actions/download-artifact@v2
       with:
         name: client
-
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ inputs.aws-access-key-id }}
-        aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
-        aws-region: ${{ inputs.aws-region }}
-        role-to-assume: ${{ inputs.aws-build-role }}
-        role-duration-seconds: 1200
     - name: Upload to S3
       shell: bash
       run: aws s3 sync . "s3://${APP_BUCKET}"
-
     - name: Invalidate Cloudfront
       shell: bash
       run: aws cloudfront create-invalidation --distribution-id ${APP_CLOUDFRONT_ID} --paths "/*"
