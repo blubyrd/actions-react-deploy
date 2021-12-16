@@ -57,9 +57,9 @@ runs:
       uses: actions/download-artifact@v2
       with:
         name: client
-    - name: Upload to S3
+    - name: Upload to S3 with no cach
       shell: bash
-      run: aws s3 sync . "s3://${APP_BUCKET}"
+      run: aws s3 sync --cache-control 'no-cache' . "s3://${APP_BUCKET}"
     - name: Invalidate Cloudfront
       shell: bash
       run: aws cloudfront create-invalidation --distribution-id ${APP_CLOUDFRONT_ID} --paths "/*"
