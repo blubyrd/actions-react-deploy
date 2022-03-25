@@ -15,6 +15,8 @@ inputs:
   aws-role-dev:
     description: 'The relevant dev build role for AWS.'
     required: true
+ aws-role-stage:
+    description: 'The relevant stage build role for AWS.'
   aws-role-prod:
     description: 'The relevant prod build role for AWS.'
     required: true
@@ -36,6 +38,7 @@ runs:
       uses: source-ip/actions-set-build-role@v1.0.0
       with:
         prod-role: ${{ inputs.aws-role-prod }}
+        stage-role: ${{ inputs.aws-role-stage }}
         dev-role: ${{ inputs.aws-role-dev }}
         environment-name: ${{ inputs.target-environment }}
     - name: Configure AWS Credentials
