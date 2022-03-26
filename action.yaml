@@ -15,7 +15,7 @@ inputs:
   aws-role-dev:
     description: 'The relevant dev build role for AWS.'
     required: true
- aws-role-stage:
+  aws-role-stage:
     description: 'The relevant stage build role for AWS.'
   aws-role-prod:
     description: 'The relevant prod build role for AWS.'
