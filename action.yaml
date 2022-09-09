@@ -35,7 +35,7 @@ runs:
   steps:
     - name: Set Build Role
       id: set-role
-      uses: source-ip/actions-set-build-role@v1.0.0
+      uses: blubyrd/actions-set-build-role@v1.0.0
       with:
         prod-role: ${{ inputs.aws-role-prod }}
         stage-role: ${{ inputs.aws-role-stage }}
@@ -51,7 +51,7 @@ runs:
         role-duration-seconds: 1200
         role-skip-session-tagging: true
     - name: Get App Config
-      uses: source-ip/actions-aws-ssm-get-by-path@v1.0.0
+      uses: blubyrd/actions-aws-ssm-get-by-path@v1.0.0
       with:
         paths: ${{ format('/app/{0},/app/{0}/{1}/', inputs.app-name, inputs.target-environment) }}
         save-to-environment: true
