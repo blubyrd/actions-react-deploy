@@ -57,7 +57,7 @@ runs:
         save-to-environment: true
         file: .env
     - name: Download Artifact
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: client
     - name: Upload to S3 with no cach
